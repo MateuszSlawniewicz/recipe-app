@@ -3,6 +3,7 @@ package mat.springapp.recipeapp.converters;
 import lombok.Synchronized;
 import mat.springapp.recipeapp.command.IngredientCommand;
 import mat.springapp.recipeapp.model.Ingredient;
+import mat.springapp.recipeapp.model.Recipe;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,6 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
         this.uomConverter = uomConverter;
     }
 
-    @Synchronized
     @Nullable
     @Override
     public Ingredient convert(IngredientCommand source) {
@@ -25,6 +25,13 @@ public class IngredientCommandToIngredient implements Converter<IngredientComman
         }
         final Ingredient ingredient = new Ingredient();
         ingredient.setId(source.getId());
+
+        if(source.getRecipeId() != null){
+            Recipe recipe = new Recipe();
+            recipe.setId(source.getRecipeId());
+            ingredient.setRecipe(recipe);
+            recipe.addIngredient(ingredient);
+        }
         ingredient.setDescription(source.getDescription());
         ingredient.setAmount(source.getAmount());
         ingredient.setUnitOfMeasure(uomConverter.convert(source.getUnitOfMeasure()));

@@ -1,4 +1,5 @@
 package mat.springapp.recipeapp.command;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,5 +14,6 @@ public class IngredientCommand {
     private String description;
     private BigDecimal amount;
     private UnitOfMeasureCommand unitOfMeasure;
+    private Long recipeId;
 
 }
