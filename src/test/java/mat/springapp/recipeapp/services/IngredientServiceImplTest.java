@@ -73,8 +73,23 @@ public class IngredientServiceImplTest {
         assertEquals(Long.valueOf(3L), ingredientCommand.getId());
         assertEquals(Long.valueOf(1L), ingredientCommand.getRecipeId());
         verify(recipeRepository, times(1)).findById(anyLong());
-
-
     }
 
+    @Test
+    public void testDeleteById() {
+        //given
+        Recipe recipe = new Recipe();
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(3L);
+        recipe.addIngredient(ingredient);
+        ingredient.setRecipe(recipe);
+        Optional<Recipe> recipe1 = Optional.of(recipe);
+        when(recipeRepository.findById(anyLong())).thenReturn(recipe1);
+
+        //when
+        ingredientService.deleteById(1L, 3L);
+        //then
+        verify(recipeRepository, times(1)).findById(anyLong());
+        verify(recipeRepository, times(1)).save(any(Recipe.class));
+    }
 }
