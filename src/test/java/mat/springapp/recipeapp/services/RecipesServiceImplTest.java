@@ -2,6 +2,7 @@ package mat.springapp.recipeapp.services;
 
 import mat.springapp.recipeapp.converters.RecipeCommandToRecipe;
 import mat.springapp.recipeapp.converters.RecipeToRecipeCommand;
+import mat.springapp.recipeapp.exceptions.NotFoundException;
 import mat.springapp.recipeapp.model.Recipe;
 import mat.springapp.recipeapp.reporitories.RecipeRepository;
 import org.junit.Before;
@@ -66,6 +67,17 @@ public class RecipesServiceImplTest {
         Long toDelete = 2L;
         recipeRepository.deleteById(toDelete);
         verify(recipeRepository, times(1)).deleteById(anyLong());
+    }
+
+
+    @Test(expected = NotFoundException.class)
+    public void getRecipeByIdNotFoundTest() throws Exception{
+
+        Optional<Recipe> optionalRecipe = Optional.empty();
+        when(recipeRepository.findById(anyLong())).thenReturn(optionalRecipe);
+        Recipe recipe = recipesService.findById(1L);
+
+
     }
 
 }

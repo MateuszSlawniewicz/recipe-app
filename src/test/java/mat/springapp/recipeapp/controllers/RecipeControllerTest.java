@@ -1,6 +1,7 @@
 package mat.springapp.recipeapp.controllers;
 
 import mat.springapp.recipeapp.command.RecipeCommand;
+import mat.springapp.recipeapp.exceptions.NotFoundException;
 import mat.springapp.recipeapp.model.Recipe;
 import mat.springapp.recipeapp.services.RecipesService;
 import org.junit.Before;
@@ -32,7 +33,7 @@ public class RecipeControllerTest {
         MockitoAnnotations.initMocks(this);
 
         controller = new RecipeController(recipeService);
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(ControllerExceptionHandler.class).build();
     }
 
     @Test
@@ -70,6 +71,7 @@ public class RecipeControllerTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("id", "")
                 .param("description", "some string")
+                .param("directions", "some directions")
         )
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/recipe/2/view"));
@@ -95,4 +97,22 @@ public class RecipeControllerTest {
                 .andExpect(view().name("redirect:/"));
         verify(recipeService, times(1)).deleteById(anyLong());
     }
+
+    @Test
+    public void testGetRecipeNotFound() throws Exception {
+        when(recipeService.findById(anyLong())).thenThrow(NotFoundException.class);
+        mockMvc.perform(get("/recipe/1/view"))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("404error"));
+    }
+
+
+    @Test
+    public void testGetRecipeNumberFormatException() throws Exception {
+        mockMvc.perform(get("/recipe/asd/view"))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("400error"));
+    }
+
+
 }
